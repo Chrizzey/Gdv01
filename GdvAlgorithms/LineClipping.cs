@@ -43,27 +43,46 @@ public static class LineClipping
         return rc;
     }
 
+    /// <summary>
+    /// Der Algorithmus Berechnet die Schnittpunkte zwischen einer Linie und einem ClippingFenster
+    ///
+    /// - Liegen beide Punkte p0 und p1 innerhalb des Fensters, bleiben die Punkte unverändert und der Algorithmus gibt true zurück
+    /// - Liegen beide Punkte p0 und p1 außerhalb des Fensters, gibt der Rückgabewert an, ob die Linie durch das Fenster läuft (return true) oder nicht (return false)
+    /// - Liegen die Punkte so, dass die Linie durch das Fenster läuft, berechnet der Algorithmus neue Punkte (bzw. p0 und p1 werden aktualisiert), die auf den Kanten
+    ///   des Clippingfensters liegen. Mit den neu berechneten Punkten p0 und p1 lässt sich dann die Linie effizient innerhalb vom Clippingfenster zeichnen.
+    /// 
+    /// </summary>
+    /// <param name="p0">Der Startpunkt der Linie</param>
+    /// <param name="p1">Der Endpunkt der Linie</param>
+    /// <returns>True, wenn die Linie durch das Clipping geht, ansonsten false</returns>
     public static bool CohenSutherland(Point2d p0, Point2d p1)
     {
+        // Der region code bestimmt, wo die Punkte relativ zum ClippingFenster liegen
         var rc0 = RegionCode(p0);
         var rc1 = RegionCode(p1);
 
+        // beinhaltet die Abbruchbedingung für die Schleife
         var done = false;
+
+        // Rückgabewert, ob linie durchs Clippingfenster läuft
         var accept = false;
 
         do
         {
             if (rc0 == 0 && rc1 == 0)
             {
-                done = true;
-                accept = true;
-            }
+                // Wenn der regionCode von beiden punkten 0 ist,
+                // dann sind beide Punkte im Clippingfenster und man muss nichts mehr tun
+                done = true;                                            
+                accept = true;                                      
+            }                                                       
             else if ((rc0 & rc1) != 0)
             {
+                // Wenn die bitweise Konjunktion nicht 0 ergibt, führt die Linie nicht durchs Clippingfenster
                 done = true;
                 accept = false;
             }
-            else
+            else // rc0 oder rc1 sind != 0 UND die Bitweise verundung von rc0 und rc1 ergeben 0
             {
                 byte outCode;
 
@@ -97,7 +116,7 @@ public static class LineClipping
                     // mit p0.xNeu = xmin und m = (p1.Y − p0.Y)/(p1.X − p0.X) ergibt deltaY dann:
                     //            (xmin - p0.X) *        (p1.Y − p0.Y)         / (p1.X − p0.X)
                     
-                    y = p0.Y +    (p1.Y - p0.Y) * (ClippingWindow.XMin - p0.X) / (p1.X - p0.X);
+                    y = p0.Y + (ClippingWindow.XMin - p0.X) * (p1.Y - p0.Y) / (p1.X - p0.X);
                     // und aus irgendeinem Grund hat der Fotzkopf (xmin - p0.X) und (p1.Y − p0.Y) vertauscht -.-
                 }
                 else if ((Right & outCode) == Right)
