@@ -98,7 +98,7 @@ public static class LineClipping
                     //            (xmin - p0.X) *        (p1.Y − p0.Y)         / (p1.X − p0.X)
                     
                     y = p0.Y +    (p1.Y - p0.Y) * (ClippingWindow.XMin - p0.X) / (p1.X - p0.X);
-                    // und aus irgendeinem Grund hat der Fotzkopf (xmin - p0.X) und (p1.Y − p0.Y) vertauscht -.-
+                    // und aus irgendeinem Grund hat der typ (xmin - p0.X) und (p1.Y − p0.Y) vertauscht -.-
                 }
                 else if ((Right & outCode) == Right)
                 {
